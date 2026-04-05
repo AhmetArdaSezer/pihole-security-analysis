@@ -50,7 +50,21 @@ Web arayüzü ve oturum yönetimi üzerinde yapılan tehdit modellemesinde şu z
    * **Bulgu:** Sistem "uses cookie" mantığıyla çalışmasına rağmen, modern çerez güvenlik politikalarının katı uygulanmadığı durumlar tespit edilmiştir. 
    * **Geliştirme Önerisi:** Uygulamanın API'si, oturum çerezlerini oluştururken mutlaka `HttpOnly`, `Secure` ve `SameSite=Strict` bayraklarını (flags) kullanmaya zorlanmalıdır. Bu sayede XSS saldırılarında çerez hırsızlığı engellenmiş olur.
 
+## 🧠 Teorik Altyapı ve Mimari İnceleme
 
+### Sistem İzolasyonu ve Kalıntı (Artifact) Analizi
+Siber güvenlik standartlarında sistem temizliğinin ispatı adli bilişim (forensics) adımlarıyla gerçekleştirilir. Sanal makine (VM) üzerinde yapılan analizlerde, `sudo pihole uninstall` işlemi sonrasında dosya sistemi (`/etc/pihole`), yetkili kullanıcılar (`/etc/passwd` üzerinden) ve ağ portları (`ss -tulpn` üzerinden) detaylıca taranmıştır. İnceleme sonucunda hiçbir konfigürasyon, arka plan servisi veya açık DNS portu kalmadığı somut olarak doğrulanmıştır.
+
+### DevSecOps: Webhook ve Otomasyon Tetikleyicileri
+CI/CD pipeline süreçlerinde "Webhook", sistemlerin birbirleriyle gerçek zamanlı iletişim kurmasını sağlayan HTTP tabanlı bir geri çağırma (callback) mekanizmasıdır. Bu projede, GitHub deposuna yapılan her yeni kod talebi (Pull Request) webhook'ları anında tetikleyerek insan müdahalesiz güvenlik ve linter testlerini başlatır. Bu otomasyon, Güvenli Yazılım Geliştirme Yaşam Döngüsü (Secure SDLC) standartlarının korunmasında kritik bir rol oynar.
+
+### Konteyner Mimarisi, VM ve Kubernetes (K8s) Karşılaştırması
+Projenin ağ ortamına dağıtımı, `debian:bookworm-slim` gibi minimal bir imaj üzerine inşa edilen Docker mimarisiyle sağlanmaktadır. 
+* Geleneksel Sanal Makineler (VM), hipervizör (Hypervisor) aracılığıyla donanımı sanallaştırıp kendi ağır işletim sistemi çekirdeklerini çalıştırırken; Docker, host sistemin çekirdeğini (kernel) paylaşarak çok daha hafif ve izole bir yapı sunar. 
+* Binlerce konteyneri yönetmek için tasarlanan Kubernetes (K8s) orkestrasyon sistemlerinden farklı olarak, Pi-hole gibi tekil çözümler Docker ile izole edilir. Güvenliği maksimize etmek için konteynerin host sisteme erişimi `cap_drop` (capabilities drop) parametreleriyle kısıtlanmalıdır.
+
+### Saldırgan Perspektifi ve Tehdit İstihbaratı
+Kaynak kod analizinde bir saldırganın (Threat Actor) birincil hedefleri API uç noktaları, kimlik doğrulama (Authentication) mekanizmaları ve veritabanı şemalarıdır. Pi-hole sistemini ele geçiren bir saldırgan, ağdaki tüm DNS sorgu geçmişini izleyerek ciddi bir mahremiyet ihlali yaratabilir veya **DNS Spoofing (Zehirlenmesi)** ile kurbanları sahte bankacılık sitelerine yönlendirebilir. Analizimizde tespit edilen Cookie tabanlı yapıdaki "Anti-CSRF Token" eksikliği, saldırganların sosyal mühendislik (zararlı link tıklatma) yoluyla yetkisiz sistem değişiklikleri yapmasına doğrudan zemin hazırlayan en kritik saldırı vektörü olarak modellenmiştir.
 
 
 
@@ -85,18 +99,3 @@ sequenceDiagram
 
 
 
-## 🧠 Teorik Altyapı ve Mimari İnceleme
-
-### Sistem İzolasyonu ve Kalıntı (Artifact) Analizi
-Siber güvenlik standartlarında sistem temizliğinin ispatı adli bilişim (forensics) adımlarıyla gerçekleştirilir. Sanal makine (VM) üzerinde yapılan analizlerde, `sudo pihole uninstall` işlemi sonrasında dosya sistemi (`/etc/pihole`), yetkili kullanıcılar (`/etc/passwd` üzerinden) ve ağ portları (`ss -tulpn` üzerinden) detaylıca taranmıştır. İnceleme sonucunda hiçbir konfigürasyon, arka plan servisi veya açık DNS portu kalmadığı somut olarak doğrulanmıştır.
-
-### DevSecOps: Webhook ve Otomasyon Tetikleyicileri
-CI/CD pipeline süreçlerinde "Webhook", sistemlerin birbirleriyle gerçek zamanlı iletişim kurmasını sağlayan HTTP tabanlı bir geri çağırma (callback) mekanizmasıdır. Bu projede, GitHub deposuna yapılan her yeni kod talebi (Pull Request) webhook'ları anında tetikleyerek insan müdahalesiz güvenlik ve linter testlerini başlatır. Bu otomasyon, Güvenli Yazılım Geliştirme Yaşam Döngüsü (Secure SDLC) standartlarının korunmasında kritik bir rol oynar.
-
-### Konteyner Mimarisi, VM ve Kubernetes (K8s) Karşılaştırması
-Projenin ağ ortamına dağıtımı, `debian:bookworm-slim` gibi minimal bir imaj üzerine inşa edilen Docker mimarisiyle sağlanmaktadır. 
-* Geleneksel Sanal Makineler (VM), hipervizör (Hypervisor) aracılığıyla donanımı sanallaştırıp kendi ağır işletim sistemi çekirdeklerini çalıştırırken; Docker, host sistemin çekirdeğini (kernel) paylaşarak çok daha hafif ve izole bir yapı sunar. 
-* Binlerce konteyneri yönetmek için tasarlanan Kubernetes (K8s) orkestrasyon sistemlerinden farklı olarak, Pi-hole gibi tekil çözümler Docker ile izole edilir. Güvenliği maksimize etmek için konteynerin host sisteme erişimi `cap_drop` (capabilities drop) parametreleriyle kısıtlanmalıdır.
-
-### Saldırgan Perspektifi ve Tehdit İstihbaratı
-Kaynak kod analizinde bir saldırganın (Threat Actor) birincil hedefleri API uç noktaları, kimlik doğrulama (Authentication) mekanizmaları ve veritabanı şemalarıdır. Pi-hole sistemini ele geçiren bir saldırgan, ağdaki tüm DNS sorgu geçmişini izleyerek ciddi bir mahremiyet ihlali yaratabilir veya **DNS Spoofing (Zehirlenmesi)** ile kurbanları sahte bankacılık sitelerine yönlendirebilir. Analizimizde tespit edilen Cookie tabanlı yapıdaki "Anti-CSRF Token" eksikliği, saldırganların sosyal mühendislik (zararlı link tıklatma) yoluyla yetkisiz sistem değişiklikleri yapmasına doğrudan zemin hazırlayan en kritik saldırı vektörü olarak modellenmiştir.
