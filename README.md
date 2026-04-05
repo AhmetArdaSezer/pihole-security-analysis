@@ -21,6 +21,7 @@ Uygulamanın kullandığı `basic-install.sh` betiği web mimarisi açısından 
 Uygulamanın kaldırılma sürecinin "Clean-up" kalitesi sanal makine (Sandbox) üzerinde test edilmiştir. `sudo pihole uninstall` komutu sonrası sistemde web sunucusu (Lighttpd) yapılandırmalarının ve PHP/Lua kalıntılarının tamamen izole edildiği adli komutlarla doğrulanmıştır.
 
 
+![gene](https://github.com/user-attachments/assets/9fb99f11-a39a-42d7-8c3b-83760b051053)
 
 ### Adım 3: CI/CD Pipeline ve Webhook Güvenliği
 GitHub Actions üzerindeki `test.yml` dosyası incelenmiştir. Kodun her PR (Pull Request) anında Webhook üzerinden tetiklenerek otomatik güvenlik testlerinden ve linter kontrollerinden geçirilmesi, güvenli yazılım yaşam döngüsü (SDLC) açısından değerlendirilmiştir.
