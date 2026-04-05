@@ -47,4 +47,18 @@ Web arayüzü ve oturum yönetimi üzerinde yapılan tehdit modellemesinde şu z
 
 2. **Çerez (Cookie) Güvenlik Bayrakları (Orta):**
    * **Bulgu:** Sistem "uses cookie" mantığıyla çalışmasına rağmen, modern çerez güvenlik politikalarının katı uygulanmadığı durumlar tespit edilmiştir. 
-   * **Geliştirme Önerisi:** Uygulamanın API'si, oturum çerezlerini oluştururken mutlaka `HttpOnly`, `Secure` ve `SameSite=Strict` bayraklarını (flags) kullanmaya zorlanmalıdır. Bu sayede XSS saldırılarında çerez hırsızlığı engellenmiş olur.
+   * **Geliştirme Önerisi:** Uygulamanın API'si, oturum çerezlerini oluştururken mutlaka `HttpOnly`, `Secure` ve `SameSite=Strict` bayraklarını (flags) kullanmaya zorlanmalıdır. Bu sayede XSS saldırılarında çerez hırsızlığı engellenmiş olur.                         ### 📊 CSRF Saldırı Akış Diyagramı (Data Flow)
+Aşağıdaki şema, tespit edilen CSRF zafiyetinin nasıl istismar edilebileceğini modellemektedir:
+
+```mermaid
+sequenceDiagram
+    participant Kurban as Kurban (Admin)
+    participant Hacker as Zararlı Site
+    participant Pihole as Pi-hole API
+    
+    Kurban->>Pihole: 1. Sisteme Giriş Yapar (Session Cookie Alır)
+    Hacker->>Kurban: 2. Sosyal Mühendislik ile Link Gönderir
+    Kurban->>Hacker: 3. Zararlı Sayfayı (Kedi Videosu) Açar
+    Hacker->>Pihole: 4. Arka planda gizli POST isteği yollar (Cookie ile)
+    Pihole-->>Pihole: 5. CSRF Token YK! İstek güvenilir sanılır.
+    Pihole-->>Hacker: 6. DNS Ayarları Değiştirilir.
