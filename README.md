@@ -33,9 +33,10 @@ Admin panelindeki `login.lp` (Lua Pages) dosyası "Reasoning" tekniği ile taran
 * **Authentication:** Oturum yönetiminin **Stateful Cookie (Çerez)** tabanlı olduğu tespit edilmiştir. Şifre sıfırlama mekanizmasının web üzerinden tamamen engellenerek (`pihole setpassword` terminal komutuna zorlanarak) Brute-Force riskinin ortadan kaldırıldığı saptanmıştır.
 * **Tehdit Modelleme (CSRF):** Form yapısında "Anti-CSRF" token eksikliği saptanmış ve oturumu açık kullanıcılar üzerinden yapılabilecek "Sahte İstek Gönderimi" (CSRF) saldırı senaryosu modellenmiştir.
 
-> `[BURAYA LOGIN.LP KODLARI SS GELECEK]`
 
----
+
+---![vizee](https://github.com/user-attachments/assets/e48303a8-3fa3-4f12-a397-5e825a415bee)
+
 
 ## 🛑 Tespit Edilen Zafiyetler ve Geliştirme Önerileri (Mitigation)
 Web arayüzü ve oturum yönetimi üzerinde yapılan tehdit modellemesinde şu zafiyetler tespit edilmiştir:
