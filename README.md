@@ -8,20 +8,32 @@ Bu rapor, Pi-hole yönetim (Dashboard) panelinin mimari yapısını, kimlik doğ
 
 ---
 
-## 🛠️ Temel Sistem ve Dağıtım Güvenliği
-* **Kurulum Güvenliği:** Sistemin bağımlılıkları çekerken uyguladığı SHA-1 bütünlük kontrolleri ve `/var/www/html/admin` web dizinini oluştururken kullandığı yetki kısıtlamaları incelenmiştir.
-* **Sistem İzolasyonu:** Web sunucusu (Lighttpd) ve bağımlılıkların kaldırılma sürecinin kalitesi analiz edilmiş, sistemin temiz bir konfigürasyona dönme becerisi test edilmiştir.
+## 🚀 Analiz Aşamaları
 
-## ⚙️ Otomasyon ve Ağ Katmanı İzolasyonu
-* **CI/CD Süreçleri ve Webhook:** GitHub Actions üzerindeki CI/CD dosyaları incelenmiş; `on: pull_request:` mekanizmasıyla tetiklenen otomatik güvenlik testleri ve linter kontrollerinin (Güvenli SDLC) önemi vurgulanmıştır.
-* **Docker Mimarisi:** Web arayüzünün ve arka plan servislerinin izole bir Docker konteyneri (minimal debian katmanı) içinde çalıştırılarak saldırı yüzeyinin nasıl daraltıldığı analiz edilmiştir.
+### Adım 1: Kurulum Scripti ve Web Dizin Güvenliği
+Uygulamanın kullandığı `basic-install.sh` betiği web mimarisi açısından statik olarak incelenmiştir. Scriptin dışarıdan paket çekerken uyguladığı SHA-1 bütünlük kontrolleri teyit edilmiştir. Kurulum esnasında admin arayüzünün barındırılacağı `/var/www/html/admin` web dizininin root yetkileriyle izole bir şekilde oluşturulduğu ve web sunucusu (Lighttpd) yetkilendirme yapıları analiz edilmiştir.
 
-## 🎯 Ana Tehdit Modeli: Authentication Analizi ve CSRF Zafiyeti
-Projenin ana odağı, admin panelinin kaynak kodları (`login.lp`) üzerinden yapılan kimlik doğrulama testleridir.
-* **Oturum Yönetimi Analizi:** Kaynak kod taraması (Reasoning) sonucunda sistemin **Stateful Cookie (Çerez)** mantığıyla çalıştığı belirlenmiştir. Ayrıca parola sıfırlama mekanizmasının web üzerinden tamamen engellenerek kaba kuvvet (Brute-Force) riskinin ortadan kaldırıldığı saptanmıştır.
-* **Cross-Site Request Forgery (CSRF) Modellemesi:** Web form yapılarında yapılan analizde "Anti-CSRF" token eksikliği tespit edilmiştir. Çerez tabanlı oturum kullanan sistemlerde, oturumu açık bir kullanıcının zararlı bir siteye yönlendirilmesi durumunda arka planda istem dışı DNS konfigürasyonu değişiklikleri yapılmasına neden olabilecek CSRF saldırı vektörü modellenmiştir.
 
-> `[BURAYA LOGIN.LP KODLARI SS]`
+![vize](https://github.com/user-attachments/assets/550c07f5-146a-4749-8753-e4a82f6ba203)
+![vize 2](https://github.com/user-attachments/assets/e752e6d4-e094-4b8c-a607-e0a6bb7e1e17)
+
+### Adım 2: İzolasyon ve Web Servislerinin Temizliği (Clean-up)
+Uygulamanın kaldırılma sürecinin "Clean-up" kalitesi sanal makine (Sandbox) üzerinde test edilmiştir. `sudo pihole uninstall` komutu sonrası sistemde web sunucusu (Lighttpd) yapılandırmalarının ve PHP/Lua kalıntılarının tamamen izole edildiği adli komutlarla doğrulanmıştır.
+
+
+
+### Adım 3: CI/CD Pipeline ve Webhook Güvenliği
+GitHub Actions üzerindeki `test.yml` dosyası incelenmiştir. Kodun her PR (Pull Request) anında Webhook üzerinden tetiklenerek otomatik güvenlik testlerinden ve linter kontrollerinden geçirilmesi, güvenli yazılım yaşam döngüsü (SDLC) açısından değerlendirilmiştir.
+
+### Adım 4: Docker Mimarisi ve Ağ Güvenliği
+Docker imajının katmanlı yapısı incelenmiştir. Web arayüzünün (Port 80/443) ve arka plan servislerinin izole bir Docker konteyneri içinde çalıştırılarak host sistemden nasıl ayrıştırıldığı ve saldırı yüzeyinin nasıl daraltıldığı analiz edilmiştir.
+
+### Adım 5: Kaynak Kod Analizi (Pasaport Kontrolü & CSRF)
+Admin panelindeki `login.lp` (Lua Pages) dosyası "Reasoning" tekniği ile taranmıştır.
+* **Authentication:** Oturum yönetiminin **Stateful Cookie (Çerez)** tabanlı olduğu tespit edilmiştir. Şifre sıfırlama mekanizmasının web üzerinden tamamen engellenerek (`pihole setpassword` terminal komutuna zorlanarak) Brute-Force riskinin ortadan kaldırıldığı saptanmıştır.
+* **Tehdit Modelleme (CSRF):** Form yapısında "Anti-CSRF" token eksikliği saptanmış ve oturumu açık kullanıcılar üzerinden yapılabilecek "Sahte İstek Gönderimi" (CSRF) saldırı senaryosu modellenmiştir.
+
+> `[BURAYA LOGIN.LP KODLARI SS GELECEK]`
 
 ---
 
