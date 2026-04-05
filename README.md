@@ -47,7 +47,13 @@ Web arayüzü ve oturum yönetimi üzerinde yapılan tehdit modellemesinde şu z
 
 2. **Çerez (Cookie) Güvenlik Bayrakları (Orta):**
    * **Bulgu:** Sistem "uses cookie" mantığıyla çalışmasına rağmen, modern çerez güvenlik politikalarının katı uygulanmadığı durumlar tespit edilmiştir. 
-   * **Geliştirme Önerisi:** Uygulamanın API'si, oturum çerezlerini oluştururken mutlaka `HttpOnly`, `Secure` ve `SameSite=Strict` bayraklarını (flags) kullanmaya zorlanmalıdır. Bu sayede XSS saldırılarında çerez hırsızlığı engellenmiş olur.                         ### 📊 CSRF Saldırı Akış Diyagramı (Data Flow)
+   * **Geliştirme Önerisi:** Uygulamanın API'si, oturum çerezlerini oluştururken mutlaka `HttpOnly`, `Secure` ve `SameSite=Strict` bayraklarını (flags) kullanmaya zorlanmalıdır. Bu sayede XSS saldırılarında çerez hırsızlığı engellenmiş olur.
+
+
+
+
+
+### 📊 CSRF Saldırı Akış Diyagramı (Data Flow)
 Aşağıdaki şema, tespit edilen CSRF zafiyetinin nasıl istismar edilebileceğini modellemektedir:
 
 ```mermaid
