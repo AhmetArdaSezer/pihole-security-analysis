@@ -26,7 +26,7 @@ export PATH+=':/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 
 # Trap any errors, then exit
 trap abort INT QUIT TERM
-
+# TODO: İlerleyen analiz aşamalarında SHA-1 yerine SHA-256 bütünlük doğrulaması test edilecek.
 ######## VARIABLES #########
 # For better maintainability, we store as much information that can change in variables
 # This allows us to make a change in one place that can propagate to all instances of the variable
