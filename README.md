@@ -1,7 +1,21 @@
-# 🌐 Pi-hole: Güvenli Web Yazılımı ve Tehdit Modellemesi
-**Öğrenci:** Ahmet Arda Sezer
-**Bölüm:** Bilişim Güvenliği Teknolojisi
-**Seçilen Senaryo:** Senaryo 1 - Pasaport Kontrolü / Authentication
+# 🛡️ Pi-hole: Web Güvenliği ve Authentication Analiz Raporu
+
+> **Öğrenci:** Ahmet Arda Sezer  
+> **Bölüm:** Bilişim Güvenliği Teknolojisi  
+> **Seçilen Senaryo:** Senaryo 1 - Pasaport Kontrolü / Authentication  
+
+
+---
+
+## 📑 İçindekiler (Table of Contents)
+- [🔍 Proje Kapsamı](#-proje-kapsam%C4%B1)
+- [1. Kurulum, İzolasyon ve Artifact Temizliği](#1-kurulum-izolasyon-ve-artifact-temizli%C4%9Fi)
+- [2. CI/CD ve Otomasyon Güvenliği](#2-cicd-ve-otomasyon-g%C3%BCvenli%C4%9Fi)
+- [3. Kimlik Doğrulama ve Zafiyet Keşfi](#3-kimlik-do%C4%9Frulama-authentication-ve-zafiyet-ke%C5%9Ffi)
+- [4. Kaynak Kod ve Akış Analizi (Threat Modeling)](#4-kaynak-kod-ve-ak%C4%B1%C5%9F-analizi-threat-modeling)
+- [5. Teorik Altyapı ve Mimari İnceleme](#5-teorik-altyap%C4%B1-ve-mimari-inceleme)
+
+---
 
 ## 📋 Proje Kapsamı
 Bu rapor, Pi-hole yönetim (Dashboard) panelinin mimari yapısını, kimlik doğrulama süreçlerini, web zafiyetlerini ve yazılımın sürekli entegrasyon güvenliğini (DevSecOps) incelemektedir.
